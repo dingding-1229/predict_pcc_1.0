@@ -1,0 +1,3 @@
+enlarge the training set
+combined with commercial datasets like cci
+conclude the features of drug-like molecule, and then generate new molecule by diffusion model
