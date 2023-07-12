@@ -1,3 +1,4 @@
+select important rather than all features for PCA
 enlarge the training set
 combined with commercial datasets like cci
-conclude the features of drug-like molecule, and then generate new molecule by diffusion model
+conclude the features of drug molecule of certain target, and then generate new molecule by diffusion/transformer/LSTM model

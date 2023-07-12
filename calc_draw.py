@@ -3,8 +3,6 @@ import networkx as nx
 import numpy as np
 from rdkit import Chem
 from rdkit.Chem import Descriptors, QED
-from rdkit.ML.Descriptors import MoleculeDescriptors
-import copy
 import matplotlib.pyplot as plt
 import multiprocessing
 import os
@@ -18,35 +16,30 @@ photo_path='./connected/photo'
 
 
 
-# 构建网络
-# G是全连接，G0是非全连接
-
+# building networks
+# G is fully-connected network, G0 is component network
 def create_net(i,threshold):
-    
     sim=pd.read_csv(sim_path+'/'+i)
     G = nx.Graph()
     edges = [(sim.iloc[j, 0], sim.iloc[j, 1], sim.iloc[j, 2]) for j in range(sim.shape[0])]
     G.add_weighted_edges_from(edges)
     G0=G.copy()
-    
     ceiling=max([weight for e1, e2, weight in G.edges(data='weight')])*threshold
-    
     for u, v, weight in G.edges(data='weight'):
         if weight < ceiling:
             G[u][v]['weight'] = 0
             G0.remove_edge(u, v)
-    
     return(G,G0)
 
 
 
-# 自建参数
+# self-bulit parameter
 def weighted_degree(i,G):
     w_all = sum(wt for u, v, wt in G.edges(i, data='weight'))   
     return(w_all)
 
 
-# 辉瑞参数
+# pfizer parameter
 def sorted_degree(G0):   
     sorted_dict = {node: degree for node, degree in sorted(G0.degree(), key=lambda x: x[1], reverse=True)}
     return(sorted_dict)
@@ -54,7 +47,6 @@ def sorted_degree(G0):
 def pfizer(G0, sorted_dict):
     G00=G0.copy()
     pfizer_predict=[]
-    
     if len(sorted_dict) > 5:
         while len(pfizer_predict) < 5:
             current_edges_num=list(sorted_dict.values())[0]
@@ -64,19 +56,18 @@ def pfizer(G0, sorted_dict):
             for node in new:
                 G00.remove_node(node)
             sorted_dict=sorted_degree(G00)
-   
     else:
-        pfizer_predict = list(sorted_dict.keys())
-                                  
+        pfizer_predict = list(sorted_dict.keys())                    
     return(pfizer_predict)
 
 
-# 计算参数
+# computing network parameters and molecular descriptors,
+# formalizing data using z-score
+# compressing data using PCA
 def compute_para(i,G,G0,drug,pfizer_predict):
     
     nodes=G.nodes()
     num=len(nodes)
-    
     
     clustering=nx.clustering(G, weight='weight')
     
@@ -93,8 +84,6 @@ def compute_para(i,G,G0,drug,pfizer_predict):
     betweenness_centrality=nx.betweenness_centrality(G0, normalized=True, weight='weight')    
     eigenvector_centrality=nx.eigenvector_centrality(G, max_iter=1000, weight='weight')
 
-    
-    
     para = pd.DataFrame({
         'pfizer': [int(j in pfizer_predict) for j in nodes],
         'node_num': num,
@@ -107,11 +96,10 @@ def compute_para(i,G,G0,drug,pfizer_predict):
         'eigenvector_centrality': [eigenvector_centrality[j] for j in nodes],
         'weighted_degree': [weighted_degree(j, G) for j in nodes]
     })
-        
-        
+    
     drug = pd.concat([drug, para], axis=1)
-#     drug = drug[(drug['cc_num'] > 1)] 
-#     降噪
+    # drug = drug[(drug['cc_num'] > 1)] 
+    # reducing noise
     
     drug['Mol'] = [Chem.MolFromSmiles(x) for x in drug['Canonical SMILES']]
     for xx,xxx in Descriptors.descList:
@@ -119,10 +107,8 @@ def compute_para(i,G,G0,drug,pfizer_predict):
         df[xx] = drug.Mol.map(xxx)
         drug=pd.concat((drug,df),axis=1)
     
-    
     df = pd.DataFrame()
     df['qed detail'] = drug['Mol'].map(QED.properties)
-    
     
     alerts = [x[7] for x in df['qed detail']]
     drug = pd.concat([drug, pd.DataFrame(alerts,columns=['alerts'])],axis=1)
@@ -135,11 +121,9 @@ def compute_para(i,G,G0,drug,pfizer_predict):
     train_para.remove('pfizer')
     train_para.remove('node_num')
 
-    
     if 'key' in train_para:
         train_para.remove('key')
 
-    
     df = pd.DataFrame()
 
     df = pd.concat([df, drug[train_para].apply(lambda x: (x - x.mean()) / x.std())])
@@ -149,7 +133,6 @@ def compute_para(i,G,G0,drug,pfizer_predict):
     features1 = df.iloc[:,:8].values
     features2 = df.iloc[:,8:].values
     features2 = features2[:, ~np.isnan(features2).any(axis=0)]
-    
     
     pca = PCA(n_components=1)
     principal_components1 = pca.fit_transform(features1)
@@ -172,9 +155,8 @@ def compute_para(i,G,G0,drug,pfizer_predict):
 
 
 
-# 画图
+# drawing network graphs using PCA data as x/y axes
 def draw(i,G0,nodes,hit,features1_dict,features2_dict):
-    
     
     pos = {node: (features1_dict[node], features2_dict[node]) for node in nodes}
     
@@ -201,7 +183,7 @@ def draw(i,G0,nodes,hit,features1_dict,features2_dict):
     ax.xaxis.set_ticks_position('bottom')
     ax.yaxis.set_ticks_position('left') 
     
-    # 设置坐标轴范围
+    # Setting the axes ranges
     plt.xlim(min(features1_dict.values()) - 0.1,max(features1_dict.values()) + 0.1)
     plt.ylim(min(features2_dict.values()) - 0.1,max(features2_dict.values()) + 0.1)
     
@@ -219,10 +201,12 @@ def draw(i,G0,nodes,hit,features1_dict,features2_dict):
     plt.savefig(fig_name,dpi=600)
     plt.close()
     
-    
- # 创建网络、计算参数、画图 
-    
+
+
+
+ # integrating into one function for parallel running
 def compute_net(i):
+
     G,G0=create_net(i,threshold=0.6)
     drug=pd.read_csv(source_path+'/'+i.split('.',1)[1])
     
@@ -241,7 +225,6 @@ def compute_net(i):
     
     
 def main():
-    
     file_list = os.listdir(sim_path)
     pool = multiprocessing.Pool()
     pool.map(compute_net, file_list)
