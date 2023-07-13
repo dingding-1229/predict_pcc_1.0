@@ -2,7 +2,7 @@
 contain the raw chemical data of drug patents downloaded from CAS database, including the training/valid1/valid2 sets.
 
 ## source folder:
-contain the formalized data preprocessed from raw data, including the training/valid1/valid2 sets.
+contain the formalized data processed from raw data, including the training/valid1/valid2 sets.
 
 ## similarity folder:
 contain the similarity data of molecule pairs by permutation, including the training/valid1/valid2 sets.
