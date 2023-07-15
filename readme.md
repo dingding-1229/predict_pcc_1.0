@@ -16,6 +16,9 @@ python code for building networks, calculating parameters and drawing graphs.
 ## sim_calc.py:
 python code for calculating similarity values of molecule pairs in a patent by permutation.
 
+## model.ipynb:
+python code for MLP & Xgboost.
+
 ## parallel.ipynb:
 jupyter notebook file responsible for parallel computation.
 
