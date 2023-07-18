@@ -32,7 +32,4 @@ Excel worksheet containing the essential data (e.g., drug names, patents number,
 Excel worksheet containing the essential data (e.g., drug names, patents number, SMILES) of valid1 set.
 
 ## valid2.xlsx:
-excel worksheet containing the essential data (e.g., drug names, patents number, SMILES) of valid2 set.
-
-## future.txt:
-contain ideas of future works.
+Excel worksheet containing the essential data (e.g., drug names, patents number, SMILES) of valid2 set.
