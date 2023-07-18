@@ -2,10 +2,10 @@
 Contains raw chemical data of pharmaceutical patents downloaded from the CAS database, including training/valid1/valid2 sets.
 
 ## source folder:
-Contains normalized data processed from raw data, including train/valid1/valid2 sets.
+Contains normalized data processed from raw data, including training/valid1/valid2 sets.
 
 ## similarity folder:
-Contains similarity data for permuted pairs of molecules, including train/effective1/effective2 sets.
+Contains similarity data for permuted pairs of molecules, including training/valid1/valid2 sets.
 
 ## connected folder:
 Contains features and network graphs for drugs, including training/valid1/valid2 sets.
