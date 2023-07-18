@@ -1,38 +1,35 @@
 ## raw folder:
-contain the raw chemical data of drug patents downloaded from CAS database, including the training/valid1/valid2 sets.
+Contains raw chemical data of pharmaceutical patents downloaded from the CAS database, including training/valid1/valid2 sets.
 
 ## source folder:
-contain the formalized data processed from raw data, including the training/valid1/valid2 sets.
+Contains normalized data processed from raw data, including train/valid1/valid2 sets.
 
 ## similarity folder:
-contain the similarity data of molecule pairs by permutation, including the training/valid1/valid2 sets.
+Contains similarity data for permuted pairs of molecules, including train/effective1/effective2 sets.
 
 ## connected folder:
-contain the features and network graphs of drugs, including the training/valid1/valid2 sets.
+Contains features and network graphs for drugs, including training/valid1/valid2 sets.
 
 ## calc_draw.py:
-python code for building networks, calculating parameters and drawing graphs.
+Python code for building networks, calculating parameters and drawing graphs.
 
 ## sim_calc.py:
-python code for calculating similarity values of molecule pairs in a patent by permutation.
+Python code for computing similarity values for pairs of molecules in a patent by permutation.
 
 ## model.ipynb:
-python code for MLP & Xgboost.
+Python code for MLP & Xgboost.
 
 ## parallel.ipynb:
-jupyter notebook file responsible for parallel computation.
+Jupyter notebook file responsible for parallel computation.
 
 ## preprocess.ipynb:
-jupyter notebook file responsible for preprocessing raw data.
+Jupyter notebook file responsible for preprocessing raw data.
 
 ## train.xlsx:
-excel worksheet containing the essential data (e.g., drug names, patents number, SMILES) of training set.
+Excel worksheet containing the essential data (e.g., drug names, patents number, SMILES) of training set.
 
 ## valid1.xlsx:
-excel worksheet containing the essential data (e.g., drug names, patents number, SMILES) of valid1 set.
+Excel worksheet containing the essential data (e.g., drug names, patents number, SMILES) of valid1 set.
 
 ## valid2.xlsx:
-excel worksheet containing the essential data (e.g., drug names, patents number, SMILES) of valid2 set.
-
-## future.txt:
-contain ideas of future works.
+Excel worksheet containing the essential data (e.g., drug names, patents number, SMILES) of valid2 set.
